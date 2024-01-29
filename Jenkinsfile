@@ -41,20 +41,21 @@ pipeline {
         }
 
         stage('Deploy on Jenkins Host') {
-    steps {
-        script {
-            echo "Deploying on Jenkins Host as Docker container with image tag: ${env.BUILD_ID}"
-            // Stoppen und Entfernen eines möglicherweise vorhandenen alten Containers
-            sh "sudo docker stop youtube-summarizer || true"
-            sh "sudo docker rm youtube-summarizer || true"
-            // Deploying unter Verwendung des OpenAI API-Keys
-            withCredentials([string(credentialsId: 'OPENAI_API_KEY', variable: 'OPENAI_API_KEY')]) {
-                // Starten des neuen Containers mit der Umgebungsvariable
-                sh "sudo docker run -d --name youtube-summarizer -p 8501:8501 -e OPENAI_API_KEY=${OPENAI_API_KEY} devrico003/youtube-summarizer-new:${env.BUILD_ID}"
+            steps {
+                script {
+                    echo "Deploying on Jenkins Host as Docker container with image tag: ${env.BUILD_ID}"
+                    // Stoppen und Entfernen eines möglicherweise vorhandenen alten Containers
+                    sh "sudo docker stop youtube-summarizer || true"
+                    sh "sudo docker rm youtube-summarizer || true"
+                    // Deploying unter Verwendung des OpenAI API-Keys
+                    withCredentials([string(credentialsId: 'OPENAI_API_KEY', variable: 'OPENAI_API_KEY')]) {
+                        // Starten des neuen Containers mit der Umgebungsvariable
+                        sh "sudo docker run -d --name youtube-summarizer -p 8501:8501 -e OPENAI_API_KEY=${OPENAI_API_KEY} devrico003/youtube-summarizer-new:${env.BUILD_ID}"
+                    }
+                }
             }
-        }
-    }
-}
+       }
+    } 
 
 
     post {
@@ -63,5 +64,4 @@ pipeline {
             cleanWs()
         }
     }
-}
 }
