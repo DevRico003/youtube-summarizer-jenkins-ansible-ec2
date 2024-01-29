@@ -5,7 +5,7 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from dotenv import load_dotenv, find_dotenv
 
-# Specify the path to your .env file
+# Specify the path to your .env filee
 #env_path = '/home/USER/.env/openai_api' # Change the Path
 # Load the OpenAI API key from the .env file
 #load_dotenv(env_path)
