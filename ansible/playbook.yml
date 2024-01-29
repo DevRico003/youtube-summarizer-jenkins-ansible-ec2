@@ -1,0 +1,17 @@
+- name: Deploy Jenkins on EC2
+  hosts: servers
+  become: yes 
+  roles:
+    - DevRico003.ansible-latest-docker-role
+  tasks:
+    - name: Install Docker
+      include_role:
+        name: DevRico003.ansible-latest-docker-role
+    - name: Install Jenkins
+      docker_container:
+        name: jenkins
+        image: devrico003/jenkins-docker-python:latest
+        ports:
+          - "8080:8080"
+          - "50000:50000"
+        restart_policy: always
