@@ -8,8 +8,6 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-ENV OPENAI_API_KEY=$OPENAI_API_KEY
-
 EXPOSE 8501
 
-CMD ["streamlit", "run", "app.py"]
+CMD ["streamlit", "run", "main.py"]
