@@ -1,0 +1,37 @@
+- hosts: test-server
+  become: yes
+  roles:
+    - DevRico003.ansible-latest-docker-role
+  tasks:
+    - name: Stop existing Docker container
+      command: docker stop youtube-summarizer
+      ignore_errors: yes
+
+    - name: Remove existing Docker container
+      command: docker rm youtube-summarizer
+      ignore_errors: yes
+
+    - name: Pull the Docker image
+      command: docker pull devrico003/youtube-summarizer-small:{{ BUILD_ID }}
+
+    - name: Run the Docker container
+      command: docker run -d --name youtube-summarizer -p 8501:8501 -e OPENAI_API_KEY={{ OPENAI_API_KEY }} devrico003/youtube-summarizer-small:{{ BUILD_ID }}
+
+    - name: Wait for the Container to be Ready
+      command: docker exec youtube-summarizer curl -s http://{{ ansible_host }}:8501/ > /dev/null
+      delegate_to: "{{ ansible_host }}"
+      register: result
+      until: result.rc == 0
+      retries: 10
+      delay: 10
+
+    - name: Execute Tests in the Docker Container
+      command: docker exec youtube-summarizer python /app/test_main.py
+      delegate_to: "{{ ansible_host }}"
+      register: test_result
+
+    - name: Check Test Results
+      fail:
+        msg: "Tests failed"
+      when: test_result.rc != 0
+

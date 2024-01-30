@@ -43,27 +43,42 @@ pipeline {
         stage('Install Ansible Role') {
             steps {
                 script {
-                    // Installieren der benötigten Ansible-Rolle
                     sh "ansible-galaxy role install DevRico003.ansible-latest-docker-role"
                 }
             }
         }
 
-        stage('Deploy with Ansible') {
-    steps {
-        script {
-            withCredentials([sshUserPrivateKey(credentialsId: 'SSH_KEY', keyFileVariable: 'SSH_PRIVATE_KEY')]) {
-                sh 'export ANSIBLE_PRIVATE_KEY_FILE=$SSH_PRIVATE_KEY'
-                withCredentials([string(credentialsId: 'OPENAI_API_KEY', variable: 'OPENAI_API_KEY')]) {
-                    sh "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventory ansible/deploy.yml -e BUILD_ID=${env.BUILD_ID} -e OPENAI_API_KEY=${OPENAI_API_KEY} -e ansible_ssh_private_key_file=$SSH_PRIVATE_KEY"
+        stage('Test ') {
+            steps {
+                script {
+                    withCredentials([sshUserPrivateKey(credentialsId: 'SSH_KEY', keyFileVariable: 'SSH_PRIVATE_KEY')]) {
+                        sh 'export ANSIBLE_PRIVATE_KEY_FILE=$SSH_PRIVATE_KEY'
+                        withCredentials([string(credentialsId: 'OPENAI_API_KEY', variable: 'OPENAI_API_KEY')]) {
+                            sh "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventory ansible/test_deploy.yml -e BUILD_ID=${env.BUILD_ID} -e OPENAI_API_KEY=${OPENAI_API_KEY} -e ansible_ssh_private_key_file=$SSH_PRIVATE_KEY"
+                        }
+                    }
                 }
             }
         }
-    }
-}
+    } 
 
-
-            } 
+        stage('Deploy with Ansible') {
+            when {
+            // Führen Sie dieses Stage nur aus, wenn das vorherige erfolgreich war
+            expression { currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
+        }
+            steps {
+                script {
+                    withCredentials([sshUserPrivateKey(credentialsId: 'SSH_KEY', keyFileVariable: 'SSH_PRIVATE_KEY')]) {
+                        sh 'export ANSIBLE_PRIVATE_KEY_FILE=$SSH_PRIVATE_KEY'
+                        withCredentials([string(credentialsId: 'OPENAI_API_KEY', variable: 'OPENAI_API_KEY')]) {
+                            sh "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i ansible/inventory ansible/prod_deploy.yml -e BUILD_ID=${env.BUILD_ID} -e OPENAI_API_KEY=${OPENAI_API_KEY} -e ansible_ssh_private_key_file=$SSH_PRIVATE_KEY"
+                        }
+                    }
+                }
+            }
+        }
+    } 
 
     post {
         always {

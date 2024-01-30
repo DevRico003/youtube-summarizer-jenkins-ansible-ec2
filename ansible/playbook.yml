@@ -1,5 +1,5 @@
 - name: Deploy Jenkins on EC2
-  hosts: servers
+  hosts: jenkins
   become: yes 
   roles:
     - DevRico003.ansible-latest-docker-role
