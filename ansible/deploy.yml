@@ -1,0 +1,16 @@
+- hosts: deployment-server
+  become: yes
+  tasks:
+    - name: Stop existing Docker container
+      command: docker stop youtube-summarizer
+      ignore_errors: yes
+
+    - name: Remove existing Docker container
+      command: docker rm youtube-summarizer
+      ignore_errors: yes
+
+    - name: Pull the Docker image
+      command: docker pull devrico003/youtube-summarizer-small:{{ BUILD_ID }}
+
+    - name: Run the Docker container
+      command: docker run -d --name youtube-summarizer -p 8501:8501 -e OPENAI_API_KEY={{ OPENAI_API_KEY }} devrico003/youtube-summarizer-small:{{ BUILD_ID }}

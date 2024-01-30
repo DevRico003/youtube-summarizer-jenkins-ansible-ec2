@@ -4,6 +4,12 @@
   roles:
     - DevRico003.ansible-latest-docker-role
   tasks:
+    - name: Install Ansible
+      apt:
+        name: ansible
+        state: latest
+        update_cache: yes
+
     - name: Install Docker Compose
       apt:
         name: docker-compose

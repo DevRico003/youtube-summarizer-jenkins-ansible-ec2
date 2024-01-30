@@ -40,28 +40,22 @@ pipeline {
             } 
         }
 
-        stage('Deploy on Jenkins Host') {
+        stage('Deploy with Ansible') {
             steps {
                 script {
-                    echo "Deploying on Jenkins Host as Docker container with image tag: ${env.BUILD_ID}"
-                    // Stoppen und Entfernen eines möglicherweise vorhandenen alten Containers
-                    sh "docker stop youtube-summarizer || true"
-                    sh "docker rm youtube-summarizer || true"
-                    // Deploying unter Verwendung des OpenAI API-Keys
                     withCredentials([string(credentialsId: 'OPENAI_API_KEY', variable: 'OPENAI_API_KEY')]) {
-                        // Starten des neuen Containers mit der Umgebungsvariable
-                        sh "docker run -d --name youtube-summarizer -p 8501:8501 -e OPENAI_API_KEY=${OPENAI_API_KEY} devrico003/youtube-summarizer-small:${env.BUILD_ID}"
+                        sh "ansible-playbook -i inventory deploy.yml -e BUILD_ID=${env.BUILD_ID} -e OPENAI_API_KEY=${OPENAI_API_KEY}"
                     }
                 }
             }
-       }
+        }
+
     } 
 
-
-    // post {
-    //     always {
-    //         echo 'Cleaning up workspace...'
-    //         cleanWs()
-    //     }
-    // }
+    post {
+        always {
+            echo 'Cleaning up workspace...'
+            cleanWs()
+        }
+    }
 }
