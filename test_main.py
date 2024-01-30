@@ -10,7 +10,7 @@ class TestMainFunction(unittest.TestCase):
     @patch('main.summarize_with_langchain_and_openai')
     def test_main(self, mock_summarize, mock_transcript, mock_st):
         # Mocken der Streamlit-Funktionen
-        mock_st.text_input.return_value = 'https://www.youtub.com/watch?v=WaSn533G2IE'
+        mock_st.text_input.return_value = 'https://www.youtube.com/watch?v=WaSn533G2IE'
         mock_st.button.return_value = True
         mock_st.progress.return_value = MagicMock()
         mock_st.empty.return_value = MagicMock()
@@ -23,8 +23,11 @@ class TestMainFunction(unittest.TestCase):
         main.main()
 
         # Überprüfen, ob die richtigen Funktionen aufgerufen wurden
-        mock_transcript.assert_called_with('https://www.youtub.com/watch?v=WaSn533G2IE')
+        mock_transcript.assert_called_with('https://www.youtube.com/watch?v=WaSn533G2IE')
         mock_summarize.assert_called_with("Transcript des Videos", "de", 'gpt-3.5-turbo')
+
+        # Absichtlich einen fehlerhaften Test hinzufügen
+        self.assertEqual(1, 0, "Absichtlich fehlgeschlagener Test")
 
 if __name__ == '__main__':
     test_suite = unittest.TestLoader().discover('.')
