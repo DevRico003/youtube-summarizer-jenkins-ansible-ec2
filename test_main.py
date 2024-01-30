@@ -1,3 +1,4 @@
+import sys
 import unittest
 from unittest.mock import patch, MagicMock
 import main
@@ -26,4 +27,9 @@ class TestMainFunction(unittest.TestCase):
         mock_summarize.assert_called_with("Transcript des Videos", "de", 'gpt-3.5-turbo')
 
 if __name__ == '__main__':
-    unittest.main()
+    test_suite = unittest.TestLoader().discover('.')
+    test_result = unittest.TextTestRunner().run(test_suite)
+    if test_result.wasSuccessful():
+        sys.exit(0)
+    else:
+        sys.exit(1)
