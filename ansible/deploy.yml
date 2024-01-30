@@ -1,5 +1,7 @@
 - hosts: deployment-server
   become: yes
+  roles:
+    - DevRico003.ansible-latest-docker-role
   tasks:
     - name: Stop existing Docker container
       command: docker stop youtube-summarizer
