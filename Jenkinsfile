@@ -60,7 +60,7 @@ pipeline {
                 }
             }
         }
-    } 
+   
 
         stage('Deploy with Ansible') {
             when {
