@@ -40,6 +40,15 @@ pipeline {
             } 
         }
 
+        stage('Install Ansible Role') {
+            steps {
+                script {
+                    // Installieren der benötigten Ansible-Rolle
+                    sh "ansible-galaxy role install DevRico003.ansible-latest-docker-role"
+                }
+            }
+        }
+
         stage('Deploy with Ansible') {
             steps {
                 script {
