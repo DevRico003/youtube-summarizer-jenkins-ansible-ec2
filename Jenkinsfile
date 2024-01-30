@@ -44,7 +44,7 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'OPENAI_API_KEY', variable: 'OPENAI_API_KEY')]) {
-                        sh "ansible-playbook -i inventory deploy.yml -e BUILD_ID=${env.BUILD_ID} -e OPENAI_API_KEY=${OPENAI_API_KEY}"
+                        sh "ansible-playbook -i ansible/inventory ansible/deploy.yml -e BUILD_ID=${env.BUILD_ID} -e OPENAI_API_KEY=${OPENAI_API_KEY}"
                     }
                 }
             }
