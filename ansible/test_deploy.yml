@@ -18,10 +18,11 @@
       command: docker run -d --name youtube-summarizer -p 8501:8501 -e OPENAI_API_KEY={{ OPENAI_API_KEY }} devrico003/youtube-summarizer-small:{{ BUILD_ID }}
 
     - name: Wait for the Container to be Ready
-      command: docker exec youtube-summarizer curl -s http://{{ ansible_host }}:8501/ > /dev/null
+      command: >
+        docker exec youtube-summarizer curl -s -o /dev/null -w "%{http_code}" http://{{ ansible_host }}:8501/
       delegate_to: "{{ ansible_host }}"
       register: result
-      until: result.rc == 0
+      until: result.stdout == "200"
       retries: 10
       delay: 10
 
