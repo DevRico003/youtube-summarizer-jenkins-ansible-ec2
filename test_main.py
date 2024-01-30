@@ -27,7 +27,7 @@ class TestMainFunction(unittest.TestCase):
         mock_summarize.assert_called_with("Transcript des Videos", "de", 'gpt-3.5-turbo')
 
         # Absichtlich einen fehlerhaften Test hinzufügen
-        self.assertEqual(1, 0, "Absichtlich fehlgeschlagener Test")
+        # self.assertEqual(1, 0, "Absichtlich fehlgeschlagener Test")
 
 if __name__ == '__main__':
     test_suite = unittest.TestLoader().discover('.')
