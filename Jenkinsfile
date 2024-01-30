@@ -52,12 +52,14 @@ pipeline {
         stage('Deploy with Ansible') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'OPENAI_API_KEY', variable: 'OPENAI_API_KEY')]) {
-                        sh "ansible-playbook -i ansible/inventory ansible/deploy.yml -e BUILD_ID=${env.BUILD_ID} -e OPENAI_API_KEY=${OPENAI_API_KEY}"
+                    withCredentials([sshUserPrivateKey(credentialsId: 'SSH_KEY', keyFileVariable: 'SSH_PRIVATE_KEY')]) {
+                        sh 'export ANSIBLE_PRIVATE_KEY_FILE=$SSH_PRIVATE_KEY'
+                        withCredentials([string(credentialsId: 'OPENAI_API_KEY', variable: 'OPENAI_API_KEY')]) {
+                            sh "ansible-playbook -i ansible/inventory ansible/deploy.yml -e BUILD_ID=${env.BUILD_ID} -e OPENAI_API_KEY=${OPENAI_API_KEY} -e ansible_ssh_private_key_file=$SSH_PRIVATE_KEY"
+                        }
                     }
                 }
             }
-        }
 
     } 
 
